@@ -4,16 +4,17 @@ import (
 	"github.com/go-gormigrate/gormigrate/v2"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"raftt.io/bananas/cmd/backoffice/app/database/migrations/initial"
 	"raftt.io/bananas/cmd/backoffice/app/database/session"
 )
 
 // Migrate updates DB to current schema.
 func Migrate() error {
-	session, err := session.CurrentSession()
+	dbSession, err := session.CurrentSession()
 	if err != nil {
 		return err
 	}
-	return MigrateConnection(session.DB)
+	return MigrateConnection(dbSession.DB)
 }
 
 func MigrateConnection(connection *gorm.DB) error {
@@ -21,6 +22,7 @@ func MigrateConnection(connection *gorm.DB) error {
 		connection, gormigrate.DefaultOptions,
 		append(
 			[]*gormigrate.Migration{},
+			initial.InitialMigration(),
 		),
 	)
 	return errors.WithStack(migrator.Migrate())
