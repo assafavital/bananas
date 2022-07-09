@@ -1,31 +1,31 @@
 package main
 
 import (
-	"raftt.io/bananas/cmd/backoffice/app"
-	"raftt.io/bananas/pkg/cmd"
-
-	"github.com/spf13/cobra"
+	"gorm.io/gorm"
+	"raftt.io/bananas/cmd/backoffice/database/session"
+	"raftt.io/bananas/cmd/backoffice/demo"
+	l "raftt.io/bananas/pkg/logging"
 )
 
-var (
-	rootCmd = &cobra.Command{
-		Use:  "server",
-		Long: "Raftt backoffice server",
-	}
-
-	runCmd = &cobra.Command{
-		Use:  "run",
-		Long: "Run backoffice server handling user authentication and Github OAuth",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return app.RunServer(cmd.Context())
-		},
-	}
-)
+var db *gorm.DB
 
 func init() {
-	rootCmd.AddCommand(runCmd)
+	dbSession, err := session.CurrentSession()
+	if err != nil {
+		panic(err)
+	}
+	db = dbSession.DB
 }
 
 func main() {
-	cmd.MakeInternalCommand(rootCmd, "").Execute()
+	l.Logger.Info("👋 WELCOME TO BACKOFFICE 👋")
+	if err := run(demo.CreateUsers); err != nil {
+		l.Logger.Error(err)
+	}
+	//if err := run(demo.MigrateUsers); err != nil {
+	//	l.Logger.Error(err)
+	//}
+	if err := run(demo.BetterMigrateUsers); err != nil {
+		l.Logger.Error(err)
+	}
 }
