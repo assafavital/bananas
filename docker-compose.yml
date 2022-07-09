@@ -21,10 +21,25 @@ services:
       - .:/app:cached
     environment:
       - DB_URL=host=db user=postgres password=password dbname=postgres port=5432 sslmode=disable
-    ports:
-      - "3000:3000"
     depends_on:
       - db
+  pad:
+    image: sqlpad/sqlpad
+    ports:
+      - "4000:3000"
+    depends_on:
+      - db
+    volumes:
+      - database_data:/var/lib/sqlpad
+    environment:
+      - SQLPAD_CONNECTIONS__prod123__name=backoffice
+      - SQLPAD_CONNECTIONS__prod123__driver=postgres
+      - SQLPAD_CONNECTIONS__prod123__host=db
+      - SQLPAD_CONNECTIONS__prod123__username=postgres
+      - SQLPAD_CONNECTIONS__prod123__password=password
+      - SQLPAD_CONNECTIONS__prod123__database=postgres
+      - SQLPAD_AUTH_DISABLED=true
+      - SQLPAD_AUTH_DISABLED_DEFAULT_ROLE=admin
 
 volumes:
   database_data:

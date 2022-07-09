@@ -2,6 +2,7 @@ build:
   dockerComposeFile: ./docker-compose.yml
   workdir: ./
 devContainer: dev/dev-compose.yml
+#host: localhost:8080
 data:
   - service: db
     type: postgres
