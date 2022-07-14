@@ -2,7 +2,7 @@ build:
   dockerComposeFile: ./docker-compose.yml
   workdir: ./
 devContainer: dev/dev-compose.yml
-#host: localhost:8080
+host: admiral.rafttdev.raftt.io
 data:
   - service: db
     type: postgres

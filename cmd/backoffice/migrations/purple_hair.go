@@ -15,7 +15,13 @@ func AddPurpleHair() *gormigrate.Migration {
 		ID: "Add purple hair column to prime ministers table",
 		Migrate: func(db *gorm.DB) error {
 			l.Logger.Info("😈 Running purple hair migration")
-			return errors.WithStack(db.AutoMigrate(&PrimeMinister{}))
+			if err := db.AutoMigrate(&PrimeMinister{}); err != nil {
+				return errors.WithStack(err)
+			}
+
+			// TODO: PMs named "bibi" should ALWAYS have purple hair!
+			res := db.Table("prime_ministers").Where("name = ?", "bibi").Update("has_purple_hair", true)
+			return res.Error
 		},
 	}
 }

@@ -19,13 +19,7 @@ func init() {
 
 func main() {
 	l.Logger.Info("👋 WELCOME TO BACKOFFICE 👋")
-	if err := run(demo.CreateUsers); err != nil {
-		l.Logger.Error(err)
-	}
-	//if err := run(demo.MigrateUsers); err != nil {
-	//	l.Logger.Error(err)
-	//}
-	if err := run(demo.BetterMigrateUsers); err != nil {
-		l.Logger.Error(err)
-	}
+	run(demo.CreateUsers)
+	run(demo.BetterMigrateUsers)
+	l.Logger.Info("🐷 That's all Folks!")
 }

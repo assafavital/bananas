@@ -34,16 +34,16 @@ func createUsersTable(db *gorm.DB) error {
 func createUsers(db *gorm.DB) error {
 	users := []types.User{
 		{
+			Name:                   "Assaf",
+			GithubToken:            "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",
+			BibibucketRefreshToken: "bbb_12345",
+		},
+		{
 			Name:        "Marcus",
 			GithubToken: "ghp_oi2h34t0",
 		},
 		{
 			Name: "Papi",
-		},
-		{
-			Name:                   "Assaf",
-			GithubToken:            "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",
-			BibibucketRefreshToken: "bbb_12345",
 		},
 	}
 	return errors.Wrap(

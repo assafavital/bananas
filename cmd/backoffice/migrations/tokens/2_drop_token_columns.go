@@ -15,21 +15,27 @@ func DropTokenColumns() *gormigrate.Migration {
 			if err := deleteTokenlessUsers(db); err != nil {
 				return err
 			}
-			return errors.WithStack(
-				db.Exec(
-					"ALTER TABLE users " +
-						"DROP COLUMN github_token, " +
-						"DROP COLUMN gitlab_refresh_token, " +
-						"DROP COLUMN bibibucket_refresh_token",
-				).Error,
-			)
+			return dropTokenColumnsFromUsers(db)
 		},
 	}
 }
 
 func deleteTokenlessUsers(db *gorm.DB) error {
-	return errors.WithStack(db.Exec(
-		"DELETE FROM users WHERE id IN (" +
-			"SELECT users.id FROM USERS	LEFT OUTER JOIN user_tokens ON users.id = user_tokens.user_id " +
-			"WHERE user_tokens.user_id IS NULL)").Error)
+	var usersWithTokens []uint
+	if err := db.Table("user_tokens").Distinct("user_id").Find(&usersWithTokens).Error; err != nil {
+		return err
+	}
+	return errors.WithStack(db.Delete(&User{}, usersWithTokens).Error)
+}
+
+func dropTokenColumnsFromUsers(db *gorm.DB) error {
+	return db.Transaction(func(db *gorm.DB) error {
+		if err := db.Migrator().DropColumn(&User{}, "github_token"); err != nil {
+			return errors.WithStack(err)
+		}
+		if err := db.Migrator().DropColumn(&User{}, "gitlab_refresh_token"); err != nil {
+			return errors.WithStack(err)
+		}
+		return errors.WithStack(db.Migrator().DropColumn(&User{}, "bibibucket_refresh_token"))
+	})
 }

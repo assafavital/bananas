@@ -7,7 +7,10 @@ import (
 	l "raftt.io/bananas/pkg/logging"
 )
 
-const theOneAndOnly = "bibi"
+const (
+	theOneAndOnly    = "bibi"
+	theOnlyFemaleOne = "golda"
+)
 
 func createPMTable(db *gorm.DB) error {
 	return db.
@@ -45,6 +48,9 @@ func BabySteps(db *gorm.DB) error {
 
 	// 2. Create first PrimeMinister
 	if err := createPM(db, theOneAndOnly); err != nil {
+		return err
+	}
+	if err := createPM(db, theOnlyFemaleOne); err != nil {
 		return err
 	}
 

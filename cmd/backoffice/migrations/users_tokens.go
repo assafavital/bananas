@@ -46,14 +46,15 @@ func EnhanceUsersAndTokens() *gormigrate.Migration {
 }
 
 func dropTokenColumnsFromUsers(db *gorm.DB) error {
-	return errors.WithStack(
-		db.Exec(
-			"ALTER TABLE users " +
-				"DROP COLUMN github_token, " +
-				"DROP COLUMN gitlab_refresh_token, " +
-				"DROP COLUMN bibibucket_refresh_token",
-		).Error,
-	)
+	return db.Transaction(func(db *gorm.DB) error {
+		if err := db.Migrator().DropColumn(&User{}, "github_token"); err != nil {
+			return errors.WithStack(err)
+		}
+		if err := db.Migrator().DropColumn(&User{}, "gitlab_refresh_token"); err != nil {
+			return errors.WithStack(err)
+		}
+		return errors.WithStack(db.Migrator().DropColumn(&User{}, "bibibucket_refresh_token"))
+	})
 }
 
 func migrateUser(db *gorm.DB, user types.User) (err error) {
